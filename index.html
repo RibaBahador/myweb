@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8" />
+<title>Happy Birthday</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #ffe6f0 0%, #fff0f5 100%);
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+    color: #b03a59;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 4rem;
+    margin-top: 20px;
+    color: #d6336c;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+    z-index: 10;
+  }
+  /* قلب های متحرک */
+  .heart {
+    position: fixed;
+    width: 15px;
+    height: 15px;
+    background: #ff4081;
+    opacity: 0.8;
+    transform: rotate(45deg);
+    animation: fall 6s linear infinite;
+    border-radius: 3px 3px 0 0;
+    box-shadow: inset 0 0 5px #ff80ab;
+    z-index: 5;
+  }
+  .heart::before,
+  .heart::after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: #ff4081;
+    border-radius: 50%;
+  }
+  .heart::before {
+    top: -7.5px;
+    left: 0;
+  }
+  .heart::after {
+    left: 7.5px;
+    top: 0;
+  }
+  @keyframes fall {
+    0% {
+      transform: translateY(-10vh) rotate(45deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(110vh) rotate(45deg);
+      opacity: 0;
+    }
+  }
+  .slider {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #f6a5d1cc;
+    padding: 20px;
+    margin-top: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 450px;
+    z-index: 10;
+  }
+  img {
+    width: 100%;
+    height: 400px; /* ارتفاع مشخص */
+    object-fit: contain; /* تغییر این خط */
+    background: #fff0f5; /* پس‌زمینه صورتی روشن */
+    border-radius: 20px;
+    box-shadow: 0 0 20px #f9a8bb;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+  img.active {
+    opacity: 1;
+    position: relative;
+  }
+  .caption {
+    margin-top: 10px;
+    font-size: 1.3rem;
+    min-height: 70px;
+    color: #ad1457;
+    font-weight: 600;
+    position: relative;
+    z-index: 10;
+  }
+  audio {
+    margin-top: 30px;
+    width: 100%;
+    outline: none;
+    border-radius: 15px;
+    z-index: 10;
+  }
+  .message {
+    margin-top: 30px;
+    max-width: 600px;
+    background: #fff0f5cc;
+    border-radius: 20px;
+    padding: 20px;
+    color: #880e4f;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<h1>Happy Birthday! 🎉</h1>
+
+<div class="slider"></div>
+
+<audio id="bgMusic" controls loop>
+  <source src="music.mp3" type="audio/mpeg" />
+  مرورگر شما از پخش آهنگ پشتیبانی نمی‌کند.
+</audio>
+
+<div class="message" id="fullMessage"></div>
+
+<script>
+  // ساخت قلب‌ها
+  const heartCount = 30;
+  for(let i=0; i<heartCount; i++){
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.animationDuration = (4 + Math.random() * 4) + 's';
+    heart.style.animationDelay = (Math.random() * 6) + 's';
+    heart.style.width = heart.style.height = (10 + Math.random()*10) + 'px';
+    document.body.appendChild(heart);
+  }
+
+  // عکس‌ها و متن‌های زیر عکس
+  const images = [
+    "photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg","photo6.jpg",
+    "photo7.jpg","photo8.jpg","photo9.jpg","photo10.jpg","photo11.jpg","photo12.jpg","photo13.jpg"
+  ];
+
+  const captions = [
+    "وقتی نگات کردم، قلبم پر از آرامش شد.",
+    "لبخندت خورشید دل منه.",
+    "با تو هر روزم یک معجزه‌ست.",
+    "دستات امن‌ترین جای دنیاست.",
+    "حضور تو یعنی زندگی واقعی.",
+    "هر لحظه کنار تو، یه خاطره‌ست.",
+    "صدای خنده‌ات موسیقی روحم.",
+    "عشق یعنی تو باشی و من باشم.",
+    "دلم فقط به تو وابسته‌ست.",
+    "با تو بودن، قشنگ‌ترین حسه.",
+    "نگاهت آرامش بی‌پایانه.",
+    "با تو بودن یعنی زندگی پر از عشق.",
+    "تو بهترین اتفاق زندگیمی."
+  ];
+
+  // متن اصلی پایین صفحه
+  const fullText = `شنیده ای می‌گویند ادمی دوای درد دیگریست؟
+خواستم بگویم اگر معنی اش را نمیدانی به خودت در زندگی من بنگر؛
+تو آن شخصی هستی که به زندگیه من معنی میدهی،به دنیای من رنگ و به چشمان من زیبایی میبخشی، اری من با بودن تو معنی میگیرم با وجوده تو، با لبخند تو.
+هرچقدر از عشقم برایت بگویم کم گفته ام هرچقدر برایت بنویسم کم نوشته ام هرکاری کنم باز هم در برابر عشقی که بهت دارم کم است و کم می اید.
+ازت ممنونم برای همه چیز برای لبخند هایم برای حس های خوبم برای معنی دادنت به زندگی ام برای نجات دادنم برای عشقت برای وجودت برای هرچیزی که به تو ربط دارد روزی هزاران بار از خدا تشکر میکنم، تشکر میکنم برای وجودت در زندگی ام تو ان کسی هستی که به زندگی ام معنی داده است قدر خودت رو بدون تو زندگی یکی رو با وجودت نجات داده ای تو دلیلی برای زندگیه من هستی.
+ازت ممنونم که ۱۹ سال پیش به دنیا اومدی و خیلی خوشحالم که همون موقع توی دفتر سرنوشتمون اسم دوتامون رو کنار هم نوشتن این رو یادت نره تو سرنوشت زندگی من هستی، دلیل زندگی ام، عزیز قلب تیکه تیکه ام تو تمامِ من هستی؛ تو معنی من هستی کسی که دیگران من رو با تو می‌شناسند تو را با تک تک سلول هایم میپرستم و تورا بیشتر از جانم دوست میدارم خوشحالم بازم تونستیم قولمون رو نگه داریم و تکرارش کنیم.
+فراموش نکن تو عزیز ترین، باارزش ترین، مهم ترین و بالاترین دارایی من هستی تو کلمه های خانواده، دوست، خانه، پناه و عشق را در خودت نگه داشته ای هرگز فکر نمیکردم زمانی بیاید که به این حد از عاشقی برسم تو هدیه ای از سمت خدا به من هستی تا عمر دارم عاشقت هستم و عاشقت میمانم جانم را به قربانت کنم عزیز کرده ی قلبم تولدت پرتکرار تمام زندگیم عاشقانه دوستت دارم عشقِ من🙂♥️`;
+
+  const slider = document.querySelector('.slider');
+  const messageDiv = document.getElementById('fullMessage');
+  const audio = document.getElementById('bgMusic');
+
+  // ایجاد img ها
+  images.forEach((src,i) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `عکس ${i+1}`;
+    if(i === 0) img.classList.add('active');
+    slider.appendChild(img);
+  });
+
+  const imgs = slider.querySelectorAll('img');
+
+  // کپشن
+  const captionDiv = document.createElement('div');
+  captionDiv.className = 'caption';
+  slider.appendChild(captionDiv);
+
+  let currentIndex = 0;
+
+  function showSlide(index){
+    imgs.forEach((img,i) => {
+      img.classList.remove('active');
+      img.style.position = 'absolute';
+    });
+    imgs[index].classList.add('active');
+    imgs[index].style.position = 'relative';
+    captionDiv.textContent = captions[index];
+  }
+
+  function nextSlide(){
+    currentIndex++;
+    if(currentIndex >= imgs.length) currentIndex = 0;
+    showSlide(currentIndex);
+  }
+
+  showSlide(currentIndex);
+  setInterval(nextSlide, 5000);
+
+  messageDiv.textContent = fullText;
+
+  // موزیک از ثانیه 50 شروع بشه وقتی کاربر دکمه پلی رو زد
+  audio.addEventListener('play', () => {
+    if (audio.currentTime < 50) {
+      audio.currentTime = 50;
+    }
+  });
+</script>
+
+</body>
+</html>
